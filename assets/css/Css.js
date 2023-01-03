@@ -20,7 +20,7 @@ export const css = StyleSheet.create({
       padding: 3,
     },
     button_Home:{
-      marginRight: 20,
+      margin: 10,
       width:170,
       height:110
     },
