@@ -1,4 +1,4 @@
-import { response } from 'express';
+//import { response } from 'express';
 import React, {useState, useEffect} from 'react';
 import {Text, View, KeyboardAvoidingView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 
@@ -14,18 +14,21 @@ export default function Login(props){
     // send login form
     async function sendForm(){
         console.log('clicado')
-        let response = await fetch('http://192.168.0.144:3000/login', {
+        
+        await fetch('http://192.168.0.144:3000/login', {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              name: user,
-              password: password,
-            })
+              name: "user",
+              password: "password",
+            }),
             
         })
+        .catch(error => console.log(error));
+        
     }
 
     return(
