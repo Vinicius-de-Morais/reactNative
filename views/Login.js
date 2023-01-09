@@ -1,11 +1,12 @@
-import { response } from 'express';
 import React, {useState, useEffect} from 'react';
 import {Text, View, KeyboardAvoidingView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { css } from '../assets/css/Css';
 
-export default function Login(props){
+export default function Login({navigation}){
 
+    // set the states that will be used in log screen
     const [displayMessage, setDisplayMessage] = useState('none');
     const [user, setUser] = useState(null);
     const [password, setPassword] = useState(null);
@@ -14,6 +15,8 @@ export default function Login(props){
     // send login form
     async function sendForm(){
         console.log('clicado')
+        
+        // send the user and passwd to see if match with the database
         let response = await fetch('http://192.168.0.144:3000/login', {
             method: 'POST',
             headers: {
@@ -23,11 +26,30 @@ export default function Login(props){
             body: JSON.stringify({
               name: user,
               password: password,
-            })
+            }),
             
         })
+        .catch(error => console.log(error));
+
+        let json = await response.json();
+        
+        // here we display if the user and passwd is working 
+        if(json == "error"){
+            setDisplayMessage('flex');
+            setTimeout(()=>{
+                setDisplayMessage('none');
+            }, 3000)
+            await AsyncStorage.clear();
+        }else{
+            // if it works will be redirected to another view
+            let userData = await AsyncStorage.setItem('userData', JSON.stringify(json));
+            navigation.navigate('RestrictedArea')
+        }
+
+        //console.log(json)
     }
 
+    // The components of the view
     return(
         <KeyboardAvoidingView 
             behavior={Platform.OS == 'ios' ? "padding ": 'height'}
@@ -36,7 +58,6 @@ export default function Login(props){
             {/* logo */}
             <View>
                 <Image style={css.login__logo}source={require('../assets/img/logo.png')} />
-                <Text>{user} - {password}</Text>
             </View>
                 <Text style={css.login__msg(displayMessage)}>User or password incorrect</Text>
             

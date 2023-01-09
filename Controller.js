@@ -1,6 +1,5 @@
-
 const express = require('express');
-const cors = require('cors');
+//const cors = require('cors');
 const bodyParser = require('body-parser');
 const { restart } = require('nodemon');
 const models =  require('./models');
@@ -8,17 +7,26 @@ const models =  require('./models');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
-
 // app.use(cors)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+// the tables 
 let user=models.User;
 let tracking=models.Tracking;
 let car=models.Car;
 
-app.post('/login', (req, res)=>{
-    console.log(req.body)
+// receive the user and match with the table, and if find return the user
+app.post('/login', async(req, res)=>{
+    let resp = await user.findOne({
+        where:{name: req.body.name, password: req.body.password}
+    })
+    
+    if(resp === null){
+        res.send(JSON.stringify("error"));
+    }else{
+        res.send(resp)
+    }
 })
 
 let port = process.env.PORT || 3000;

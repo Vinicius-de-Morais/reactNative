@@ -5,8 +5,11 @@ import {css} from '../assets/css/Css'
 
 export default function Home({navigation}){
 
+    // The components of the view
     return(
         <View style={css.containerHome}>
+            
+            {/* login button */}
             <TouchableOpacity
                 onPress={() => navigation.navigate('Login', { id: 30 })}
             >
@@ -15,6 +18,8 @@ export default function Home({navigation}){
                     source={require('../assets/img/buttonLogin.png')}
                 />
             </TouchableOpacity>
+
+            {/* tracking button */}
             <TouchableOpacity
                 onPress={() => navigation.navigate('Tracking')}
             >
