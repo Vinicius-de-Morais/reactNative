@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Text, View, KeyboardAvoidingView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 import { css } from '../assets/css/Css';
 
@@ -10,12 +11,56 @@ export default function Login({navigation}){
     const [displayMessage, setDisplayMessage] = useState('none');
     const [user, setUser] = useState(null);
     const [password, setPassword] = useState(null);
-    const [login, setLogin] = useState(null);
-    
+    const [login, setLogin] = useState(false);
+
+    // verify if there is an AsyncStorage when load the log view
+    useEffect(()=>{
+        verifyLogin()
+    }, [])
+
+    // verify if the login const change
+    useEffect(()=>{
+        if(login == true){
+            biometric()
+        }
+    }, [login])
+
+    // verify if there is an login
+    async function verifyLogin(){
+        let response = await AsyncStorage.getItem('userData');
+        let json = await JSON.parse(response);
+        console.log(json)
+        if(json != null){
+            setUser(json.name);
+            setPassword(json.password);
+            setLogin(true)
+        }
+    }
+
+    // biometric
+    async function biometric(){
+        // here we see if there an biometric hardware
+        let compatible = await LocalAuthentication.hasHardwareAsync();
+        if(compatible){
+            // here we check if there's an registered biometric 
+            let biometricRecords = await LocalAuthentication.isEnrolledAsync();
+            if(!biometricRecords){
+                alert('Not found any registered biometrics')
+            }else{
+                // here we see if the biometric succeded
+                let result = await LocalAuthentication.authenticateAsync({promptMessage:'Login using biometric'});
+                if(result.success){
+                    sendForm();
+                }else{
+                    setUser(null);
+                    setPassword(null);
+                }
+            }
+        }
+    }
+
     // send login form
     async function sendForm(){
-        console.log('clicado')
-        
         // send the user and passwd to see if match with the database
         let response = await fetch('http://192.168.0.144:3000/login', {
             method: 'POST',
@@ -45,8 +90,6 @@ export default function Login({navigation}){
             let userData = await AsyncStorage.setItem('userData', JSON.stringify(json));
             navigation.navigate('RestrictedArea')
         }
-
-        //console.log(json)
     }
 
     // The components of the view
