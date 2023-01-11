@@ -59,6 +59,12 @@ export const css = StyleSheet.create({
       width: 300, 
       height: 190,
       marginBottom: 10
+    },
+    area__tab:{
+      backgroundColor:'#b2b4b7',
+      fontSize: 20,
+      fontWeight: 'bold',
+      color:'#333'
     }
   });
   
