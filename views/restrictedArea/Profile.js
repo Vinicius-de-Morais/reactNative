@@ -1,12 +1,16 @@
 import React, {useState, useEffect, useReducer} from 'react';
-import {Text, View } from 'react-native';
+import {Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function Profile(){
+import {css} from '../../assets/css/Css'
+import MenuArea from '../../assets/component/MenuArea';
+
+export default function Profile({navigation}){
 
     return(
-        <View>
-            <Text>This is an Profile JUST BELIVE IT</Text>
+        <View style={[css.container, css.containerTop]}>
+            <MenuArea title='Profile' navigation={navigation}/>
         </View>
     )
 }
