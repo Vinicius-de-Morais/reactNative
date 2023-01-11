@@ -38,7 +38,7 @@ export default function App() {
         />
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
         <Stack.Screen name="Tracking" component={Tracking} />
-        <Stack.Screen name="RestrictedArea" component={RestrictedArea} options={{headerTitle: 'Restricted Area'}}/>
+        <Stack.Screen name="RestrictedArea" component={RestrictedArea} options={{headerShown:false}}/>
 
       </Stack.Navigator>
     </NavigationContainer>
