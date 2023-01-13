@@ -7,11 +7,12 @@ import {css} from '../../assets/css/Css'
 
 export default function MenuArea(props){
 
+    // to make logout we just clear the async storage
     async function logout(){
         await AsyncStorage.clear();
         props.navigation.navigate('Login');
     }
-
+    
     return(
         <View style={css.area__menu}>
             <TouchableOpacity style={css.button__home} onPress={()=>props.navigation.navigate('Home')}>

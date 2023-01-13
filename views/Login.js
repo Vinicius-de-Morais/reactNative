@@ -3,6 +3,7 @@ import {Text, View, KeyboardAvoidingView, Image, TextInput, TouchableOpacity, Pl
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 
+import config from "../config/config.json"
 import { css } from '../assets/css/Css';
 
 export default function Login({navigation}){
@@ -29,7 +30,6 @@ export default function Login({navigation}){
     async function verifyLogin(){
         let response = await AsyncStorage.getItem('userData');
         let json = await JSON.parse(response);
-        console.log(json)
         if(json != null){
             setUser(json.name);
             setPassword(json.password);
@@ -62,7 +62,7 @@ export default function Login({navigation}){
     // send login form
     async function sendForm(){
         // send the user and passwd to see if match with the database
-        let response = await fetch('http://192.168.0.144:3000/login', {
+        let response = await fetch(`${config.UrlRoot}login`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',

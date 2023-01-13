@@ -10,17 +10,9 @@ import {Profile, RegisterCar, EditCar} from '../index';
 
 export default function RestrictedArea(){
 
-    const [user, setUser] = useState(null);
     const Tab = createMaterialBottomTabNavigator();
-    useEffect(()=>{
-        async function getUser(){
-            let response = await AsyncStorage.getItem('userData');
-            let json = JSON.parse(response);
-            setUser(json.name);
-        }
-        getUser()
-    })
-
+    
+    // here we just render the bottom tab bar to change what will bee rendered
     return(
 
         <Tab.Navigator
