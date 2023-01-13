@@ -29,6 +29,22 @@ app.post('/login', async(req, res)=>{
     }
 })
 
+app.post('/verifyPass', async(req,res)=>{
+    let response = await user.findOne({
+        where:{id: req.body.id, password: req.body.oldPassword}
+    })
+    
+    if(response === null){
+        
+        res.send(JSON.stringify("Senha Antiga errada"));
+    }else{
+        response.password=req.body.newPassword;
+        response.save();
+        res.send(JSON.stringify("Senha Atualizada com sucesso!"))
+    }
+
+})
+
 let port = process.env.PORT || 3000;
 app.listen(port, (req,res)=>{
     console.log('servidor rodando');
