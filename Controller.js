@@ -29,6 +29,7 @@ app.post('/login', async(req, res)=>{
     }
 })
 
+// verify if the old password is the same
 app.post('/verifyPass', async(req,res)=>{
     let response = await user.findOne({
         where:{id: req.body.id, password: req.body.oldPassword}
@@ -43,6 +44,23 @@ app.post('/verifyPass', async(req,res)=>{
         res.send(JSON.stringify("Senha Atualizada com sucesso!"))
     }
 
+})
+
+// create new car in the database
+app.post('/create', async (req,res)=>{
+    let trackingId='';
+    await tracking.create({
+        userId: req.body.userId,
+        code: req.body.code,
+        local: req.body.address
+    }).then((response)=>{
+        trackingId+=response.id
+    })
+
+    await car.create({
+        trackingId: trackingId,
+        name: req.body.car,
+    })
 })
 
 let port = process.env.PORT || 3000;
