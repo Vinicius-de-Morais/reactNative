@@ -16,7 +16,8 @@ export default function Profile({navigation}){
     const [newPassword, setNewPassword] = useState (null);
     const [confNewPassword, setConfNewPassword] = useState (null);
     const [message, setMessage] = useState (null);
-    
+    const [displayPasswordChange, setDisplayPasswordChange] =useState('none');
+
     useEffect(()=>{
         // get id of the logged user
         async function getUserId(){
@@ -52,8 +53,9 @@ export default function Profile({navigation}){
                 })
             }).catch(error => console.log(error));
 
-            let json = await response.json()
-            setMessage(json)
+            let json = await response.json();
+            setMessage(json);
+            setDisplayPasswordChange('none')
         }else{
             setMessage('Nova senha e a confirmacao de senha nao conferem');
         }
@@ -64,7 +66,28 @@ export default function Profile({navigation}){
         <View style={[css.container, css.containerTop]}>
             <MenuArea title='Profile' navigation={navigation}/>
             <Text>Ola, {userName}!</Text>
-            <View>
+
+            {/* Button to change the display of the change password field */}
+            <TouchableOpacity 
+                onPress={()=> setDisplayPasswordChange('flex')}
+                style={{
+                    //display: 'flex',
+                    backgroundColor: 'rgb(53, 53, 53)',
+                    borderRadius: 5,
+                    width: '80%',
+                    height: 30,
+                    marginTop: 8,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                    <Text>Change Password</Text>
+                </TouchableOpacity>
+
+            {/* Change password field */}
+            <View style={{
+                display: displayPasswordChange
+            }}>
                 <Text>{message}</Text>
                 <TextInput placeholder='Senha Antiga' onChangeText={(text)=> setOldPassword(text)} />
                 <TextInput placeholder='Nova Senha:' onChangeText={(text)=> setNewPassword(text)} />
