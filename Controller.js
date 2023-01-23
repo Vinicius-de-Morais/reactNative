@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { restart } = require('nodemon');
 const models =  require('./models');
+const QRcode = require('qrcode');
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 // app.use(cors)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static('assets'));
 
 // the tables 
 let user=models.User;
@@ -46,7 +48,7 @@ app.post('/verifyPass', async(req,res)=>{
 
 })
 
-// create new car in the database
+// create new tracking and car in the database
 app.post('/create', async (req,res)=>{
     let trackingId='';
     await tracking.create({
@@ -61,6 +63,16 @@ app.post('/create', async (req,res)=>{
         trackingId: trackingId,
         name: req.body.car,
     })
+    
+    // save the Qrcode
+    QRcode.toDataURL(req.body.code).then(url=>{
+        QRcode.toFile(
+            './assets/img/code.png',
+            req.body.code
+        );
+
+        res.send(JSON.stringify(url));
+    });
 })
 
 let port = process.env.PORT || 3000;
