@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, TextInput, TouchableOpacity} from 'react-native';
+import {Text, View, Image, Button,TextInput, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 import {css} from '../../assets/css/Css'
 import MenuArea from '../../assets/component/MenuArea';
@@ -15,19 +17,23 @@ export default function RegisterCar({navigation}){
     const [response, setResponse] = useState(null);
     const [displayMessage, setDisplayMessage] = useState('none');
     
+    // every time the message is displayed after 5 seconds e hide it
     useEffect(()=>{
         setTimeout(()=>{
             setDisplayMessage('none');
         }, 5000)
     }, [displayMessage])
-
+    
+    // on page load get the user ID
     useEffect(()=>{
         getUserId();
     }, [])
 
+    // set an new random code every time the response change
     useEffect(()=>{
         randomCode();
-    }, [])
+        setCar(null)
+    }, [response])
 
     // get the user id
     async function getUserId(){
@@ -63,6 +69,21 @@ export default function RegisterCar({navigation}){
             })
         }).catch(error => console.log(error));
 
+        let json = await response.json();
+        setResponse(json);
+    }
+
+    // share the QRcode
+    async function shareQr(){
+        const image = config.UrlRoot+'img/code.png';
+        FileSystem.downloadAsync(
+            image,
+            FileSystem.documentDirectory+'code.png'
+        ).then(({uri})=>{
+            Sharing.shareAsync(uri);
+        });
+
+        await Sharing.shareAsync()
     }
 
     return(
@@ -70,15 +91,32 @@ export default function RegisterCar({navigation}){
             <MenuArea title='Register' navigation={navigation}/>
             <Text>Registrar novo Carro</Text>
             <View style={css.login__input}>
-                <TextInput placeholder='Nome do carro' onChangeText={(text)=> setCar(text)} />                
+                <TextInput 
+                    placeholder='Nome do carro' 
+                    onChangeText={(text)=> setCar(text)}
+                    value={car}
+                />                
             </View>
             <Text style={{
-                color: 'green',
-                display: displayMessage
-            }}>Cadastro feito com sucesso</Text>
+                    color: 'green',
+                    display: displayMessage
+                }}
+            >
+                Cadastro feito com sucesso
+            </Text>
+            
             <TouchableOpacity style={css.login__button} onPress={()=>{setDisplayMessage('flex'); sendForm()}}> 
                 <Text>Cadastrar</Text>
             </TouchableOpacity>
+
+            {response &&(
+                <View>
+                    <Image source={{uri: response, height:180, width: 180}}/>
+                    <Button title='Compartilhar' onPress={()=> shareQr()}></Button>
+                </View>
+            )
+
+            }
         </View>   
     )
 }
