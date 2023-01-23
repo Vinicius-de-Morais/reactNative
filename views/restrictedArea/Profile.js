@@ -69,7 +69,7 @@ export default function Profile({navigation}){
 
             {/* Button to change the display of the change password field */}
             <TouchableOpacity 
-                onPress={()=> displayPassword == 'none'? setDisplayPasswordChange('flex') : setDisplayPasswordChange('none')}
+                onPress={()=> displayPasswordChange == 'none'? setDisplayPasswordChange('flex') : setDisplayPasswordChange('none')}
                 style={{
                     //display: 'flex',
                     backgroundColor: 'rgb(53, 53, 53)',
