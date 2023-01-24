@@ -5,6 +5,8 @@ import { BarCodeScanner} from 'expo-barcode-scanner';
 
 import {css} from '../../assets/css/Css'
 import MenuArea from '../../assets/component/MenuArea';
+import config from "../../config/config.json"
+
 
 export default function EditCar({navigation}){
     const [hasPermission, setHasPermission] = useState(null);
@@ -29,7 +31,25 @@ export default function EditCar({navigation}){
         setDisplayQR('none');
         setDisplayForm('flex');
         setCode(data)
+        searchCar(data)
     };
+    
+    // get the car in the backend
+    async function searchCar(carCode){
+        let response = await fetch(`${config.UrlRoot}searchCar`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                code: carCode,
+            })
+        }).catch(error => console.log(error));
+
+        let json = await response.json();
+        setCar(json.Cars[0].name);
+    }
 
     async function sendForm(){
 
