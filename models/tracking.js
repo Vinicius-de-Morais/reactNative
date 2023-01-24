@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   Tracking.init({
     code: DataTypes.STRING,
     local: DataTypes.STRING,
-    userId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Tracking',
