@@ -75,6 +75,15 @@ app.post('/create', async (req,res)=>{
     });
 })
 
+//find the product on our database
+app.post('/searchCar', async(req, res)=>{
+    let response = await tracking.findOne({
+        include:[{model: car}],
+        where:{code: req.body.code}
+    })
+    res.send(JSON.stringify(response));
+})
+
 let port = process.env.PORT || 3000;
 app.listen(port, (req,res)=>{
     console.log('servidor rodando');
