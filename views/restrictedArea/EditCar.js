@@ -2,6 +2,8 @@ import React, {useState, useEffect, useReducer} from 'react';
 import {Text, View, TextInput, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarCodeScanner} from 'expo-barcode-scanner';
+import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
 
 import {css} from '../../assets/css/Css'
 import MenuArea from '../../assets/component/MenuArea';
@@ -20,6 +22,18 @@ export default function EditCar({navigation}){
     // request the permission to use the camera
     useEffect(()=>{
         (async ()=>{
+            const {status} = await Location.requestForegroundPermissionsAsync();
+            if(status !== 'granted'){
+                setErrorMsg('Permisson to location was denied')
+            }
+
+
+        }) ();
+    }, []);
+    
+    // request the permition to get the location
+    useEffect(()=>{
+        (async ()=>{
             const {status} = await BarCodeScanner.requestPermissionsAsync();
             setHasPermission(status === 'granted')
         }) ();
@@ -30,8 +44,9 @@ export default function EditCar({navigation}){
         setScanned(true);
         setDisplayQR('none');
         setDisplayForm('flex');
-        setCode(data)
-        searchCar(data)
+        setCode(data);
+        await getLocation();
+        await searchCar(data);
     };
     
     // get the car in the backend
@@ -51,8 +66,23 @@ export default function EditCar({navigation}){
         setCar(json.Cars[0].name);
     }
 
-    async function sendForm(){
+    // get the user adress
+    async function getLocation(){
+        // get the location, but just the latitude and longitude
+        let location = await Location.getCurrentPositionAsync({});
+        Geocoder.init(config.geocodingAPI)
+        Geocoder.from(location.coords.latitude, location.coords.longitude)
+            .then(json =>{
+                let addressComponent = json.results[0].formatted_address
+                let jsons = json.results[0].address_components[1]
+                console.log(jsons)
+                console.log(addressComponent)
+                setLocalization(addressComponent)
+            })
+    }
 
+    async function sendForm(){
+        
     }
 
     return(

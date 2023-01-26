@@ -21,5 +21,6 @@
     "dialect": "mysql"
   },
   "UrlRoot" : "http://192.168.0.144:3000/",
-  "origin": "Av Saul Elkind, 460 - Londrina / PR"
+  "origin": "Av Saul Elkind, 460 - Londrina / PR",
+  "geocodingAPI": "AIzaSyAOzuxtY5K8SqYxJln9U1gJ7EGTuTKovaU"
 }
