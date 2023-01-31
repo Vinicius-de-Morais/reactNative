@@ -18,6 +18,7 @@ export default function EditCar({navigation}){
     const [code, setCode] = useState(null);
     const [car, setCar] = useState(null);
     const [localization, setLocalization] = useState(null);
+    const [messageResponse, setMessageResponse] = useState(null);
 
     // request the permission to use the camera
     useEffect(()=>{
@@ -74,15 +75,38 @@ export default function EditCar({navigation}){
         Geocoder.from(location.coords.latitude, location.coords.longitude)
             .then(json =>{
                 let addressComponent = json.results[0].formatted_address
-                let jsons = json.results[0].address_components[1]
-                console.log(jsons)
-                console.log(addressComponent)
                 setLocalization(addressComponent)
             })
     }
+    
+    //read the QRcode again
+    async function readAgain(){
+        setScanned(false);
+        setDisplayForm('none');
+        setDisplayQR('flex');
+        setCode(null);
+        setCar(null)
+        setLocalization(null)
+    }
 
+    // make the update of the car
     async function sendForm(){
-        
+        let response = await fetch(`${config.UrlRoot}update`,{
+            method: 'POST',
+            headers:{
+                Accept: 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                code: code,
+                car: car,
+                local: localization
+            })
+        }).catch(error => console.log(error));
+
+        let json = await response.json();
+
+        setMessageResponse(json)
     }
 
     return(
@@ -93,7 +117,7 @@ export default function EditCar({navigation}){
                 onBarCodeScanned={scanned ? undefined : (value)=>handleBarCodeScanned(value)}
                 style={css.qr__code(displayQR)}
             />
-            <Text>Código do carro: {code}</Text>
+            <Text style={{color: 'green'}}>{messageResponse}</Text>
             <View style={css.qr__form(displayForm)}>
                 <View style={css.login__input}>
                     <TextInput 
@@ -116,6 +140,15 @@ export default function EditCar({navigation}){
             <TouchableOpacity style={css.login__button} onPress={()=>{sendForm()}}> 
                 <Text>Atualizar</Text>
             </TouchableOpacity>
+
+            {scanned &&
+                <View>
+                    <TouchableOpacity style={css.login__button} onPress={()=>{readAgain()}}> 
+                        <Text>Scanear Novamente</Text>
+                    </TouchableOpacity>
+                </View>
+
+            }
 
         </View>
     )
