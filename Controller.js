@@ -29,13 +29,13 @@ app.post('/login', async(req, res)=>{
     }else{
         res.send(resp)
     }
-})
+});
 
 // verify if the old password is the same
 app.post('/verifyPass', async(req,res)=>{
     let response = await user.findOne({
         where:{id: req.body.id, password: req.body.oldPassword}
-    })
+    });
     
     if(response === null){
         
@@ -43,10 +43,10 @@ app.post('/verifyPass', async(req,res)=>{
     }else{
         response.password=req.body.newPassword;
         response.save();
-        res.send(JSON.stringify("Senha Atualizada com sucesso!"))
+        res.send(JSON.stringify("Senha Atualizada com sucesso!"));
     }
 
-})
+});
 
 // create new tracking and car in the database
 app.post('/create', async (req,res)=>{
@@ -57,12 +57,12 @@ app.post('/create', async (req,res)=>{
         local: req.body.address
     }).then((response)=>{
         trackingId+=response.id
-    })
+    });
 
     await car.create({
         trackingId: trackingId,
         name: req.body.car,
-    })
+    });
     
     // save the Qrcode
     QRcode.toDataURL(req.body.code).then(url=>{
@@ -73,16 +73,32 @@ app.post('/create', async (req,res)=>{
 
         res.send(JSON.stringify(url));
     });
-})
+});
 
 //find the product on our database
 app.post('/searchCar', async(req, res)=>{
     let response = await tracking.findOne({
         include:[{model: car}],
         where:{code: req.body.code}
-    })
+    });
     res.send(JSON.stringify(response));
-})
+});
+
+// update the car data
+app.post('/update', async(req, res)=>{
+    let response = await tracking.findOne({
+        where:{code: req.body.code},
+        include: [{all:true}] // all:true to take all related tables
+    })
+    response.local = req.body.local;
+    response.updatedAt = new Date();
+    if( response.Cars[0].name != req.body.car){
+        response.Cars[0].name = req.body.car;
+        response.Cars[0].save();
+    } 
+    response.save();
+    res.send(JSON.stringify('Dados cadastrados com sucesso'));
+});
 
 let port = process.env.PORT || 3000;
 app.listen(port, (req,res)=>{
